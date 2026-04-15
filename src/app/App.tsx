@@ -3,69 +3,10 @@ import { useEffect, useState } from 'react';
 import CircularNavigation from './components/CircularNavigation';
 import EmployeesRoute from './components/EmployeesRoute';
 import HelpDialog from './components/HelpDialog';
+import LinearityGrid from './components/LinearityGrid';
 import MenuButton from './components/MenuButton';
+import PuzzleGrid from './components/PuzzleGrid';
 import Notifications, { SAMPLE_NOTIFICATIONS } from './components/Notifications';
-
-interface SubLink {
-  label: string;
-  href: string;
-}
-
-interface Tile {
-  id: string;
-  label: string;
-  size: 'small' | 'wide' | 'tall' | 'large';
-  color: string;
-  subLinks?: SubLink[];
-}
-
-const TILES: Tile[] = [
-  { id: 'employees', label: 'Pracownicy', size: 'large', color: '#E74C3C' },
-  {
-    id: 'port-reports',
-    label: 'Raporty portów',
-    size: 'tall',
-    color: '#E67E22',
-    subLinks: [
-      { label: 'Port Gdańsk', href: '#gdansk' },
-      { label: 'Port Gdynia', href: '#gdynia' },
-    ],
-  },
-  {
-    id: 'documents',
-    label: 'Dokumenty',
-    size: 'small',
-    color: '#16A085',
-  },
-  { id: 'projects', label: 'Projekty', size: 'wide', color: '#E67E73' },
-  {
-    id: 'reports',
-    label: 'Raporty do księgowości',
-    size: 'small',
-    color: '#9B59B6',
-    subLinks: [
-      { label: 'Raport miesięczny', href: '#monthly' },
-      { label: 'Raport roczny', href: '#yearly' },
-    ],
-  },
-  { id: 'profile', label: 'Profil', size: 'tall', color: '#E91E63' },
-  { id: 'administration', label: 'Administracja', size: 'wide', color: '#F39C12' },
-  { id: 'settings', label: 'Ustawienia', size: 'small', color: '#3498DB' },
-  { id: 'wnioski', label: 'Wnioski', size: 'small', color: '#F39C12' },
-  {
-    id: 'board',
-    label: 'Zarząd',
-    size: 'wide',
-    color: '#27AE60',
-    subLinks: [
-      { label: 'Protokoły posiedzeń', href: '#protocols' },
-      { label: 'Skład zarządu', href: '#members' },
-    ],
-  },
-  { id: 'supervisory-board', label: 'Rada Nadzorcza', size: 'wide', color: '#2980B9' },
-  { id: 'calendar', label: 'Kalendarz', size: 'tall', color: '#1ABC9C' },
-  { id: 'contractors', label: 'Kontrahenci', size: 'small', color: '#8E44AD' },
-];
 
 const NAV_ITEMS = [
   {
@@ -135,8 +76,7 @@ export default function App() {
   const [pathname, setPathname] = useState(() =>
     window.location.pathname === '/employees' ? '/employees' : '/'
   );
-  const [hoveredTile, setHoveredTile] = useState<string | null>(null);
-  const [expandedTile, setExpandedTile] = useState<string | null>(null);
+  const [viewMode, setViewMode] = useState<'bento' | 'puzzle'>('bento');
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isHelpOpen, setIsHelpOpen] = useState(false);
@@ -153,7 +93,6 @@ export default function App() {
   useEffect(() => {
     const handlePopState = () => {
       setPathname(window.location.pathname === '/employees' ? '/employees' : '/');
-      setExpandedTile(null);
       setIsMenuOpen(false);
     };
 
@@ -168,20 +107,7 @@ export default function App() {
 
     window.history.pushState({}, '', nextPath);
     setPathname(nextPath);
-    setExpandedTile(null);
-    setHoveredTile(null);
     setIsMenuOpen(false);
-  };
-
-  const handleTileClick = (tile: Tile) => {
-    if (tile.id === 'employees') {
-      navigate('/employees');
-      return;
-    }
-
-    if (tile.subLinks) {
-      setExpandedTile(expandedTile === tile.id ? null : tile.id);
-    }
   };
 
   const toggleMenu = () => {
@@ -207,7 +133,7 @@ export default function App() {
 
   return (
     <div
-      className="min-h-screen p-4 md:p-8 lg:p-12"
+      className="min-h-screen p-4 md:p-6 lg:p-8"
       style={{
         background: 'linear-gradient(135deg, #d7dbe1 0%, #c7cdd5 52%, #bcc4ce 100%)',
         position: 'relative',
@@ -225,294 +151,126 @@ export default function App() {
         }}
       />
 
-      {/* App indicator with status */}
-      <motion.div
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-        style={{
-          position: 'fixed',
-          top: '20px',
-          left: '20px',
-          display: 'flex',
-          alignItems: 'center',
-          gap: '8px',
-          zIndex: 1000,
-        }}
+      <div
+        className={`${isEmployeesRoute ? 'w-3/4 mx-auto' : 'max-w-7xl mx-auto'} flex flex-col min-h-screen`}
+        style={{ position: 'relative', zIndex: 1 }}
       >
-        <motion.div
-          style={{
-            fontFamily: "'Archivo Black', sans-serif",
-            fontSize: '20px',
-            letterSpacing: '-0.02em',
-            color: '#1a1a1a',
-          }}
-          animate={{
-            opacity: [1, 0.85, 1],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: 'easeInOut',
-          }}
-        >
-          ePCS
-        </motion.div>
+        {/* Header bar — Panel główny + time */}
+        {!isEmployeesRoute && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+            style={{
+              margin: '0 16px 24px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '12px 16px',
+              background: 'rgba(255, 255, 255, 0.6)',
+              backdropFilter: 'blur(10px)',
+              borderRadius: '12px',
+              boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)',
+              flexShrink: 0,
+            }}
+          >
+            <span
+              style={{
+                fontFamily: "'Manrope', sans-serif",
+                fontSize: '14px',
+                fontWeight: 600,
+                color: '#1a1a1a',
+              }}
+            >
+              Panel główny
+            </span>
 
-        {/* Status indicator */}
-        <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-          <motion.div
-            style={{
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: '#27AE60',
-            }}
-            animate={{
-              scale: [1, 1.2, 1],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
-          <motion.div
-            style={{
-              position: 'absolute',
-              width: '8px',
-              height: '8px',
-              borderRadius: '50%',
-              background: '#27AE60',
-            }}
-            animate={{
-              scale: [1, 1.8, 1],
-              opacity: [0.6, 0, 0.6],
-            }}
-            transition={{
-              duration: 2,
-              repeat: Infinity,
-              ease: 'easeInOut',
-            }}
-          />
+            {/* View toggle */}
+            <div style={{ display: 'flex', gap: '4px', background: 'rgba(0,0,0,0.06)', borderRadius: '10px', padding: '3px' }}>
+              {(['bento', 'puzzle'] as const).map(mode => (
+                <button
+                  key={mode}
+                  onClick={() => setViewMode(mode)}
+                  style={{
+                    fontFamily: "'Manrope', sans-serif",
+                    fontSize: '12px',
+                    fontWeight: 700,
+                    padding: '5px 12px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    cursor: 'pointer',
+                    background: viewMode === mode ? 'white' : 'transparent',
+                    color: viewMode === mode ? '#1a1a1a' : '#666',
+                    boxShadow: viewMode === mode ? '0 1px 4px rgba(0,0,0,0.1)' : 'none',
+                    transition: 'all 0.2s ease',
+                  }}
+                >
+                  {mode === 'bento' ? 'Bento' : 'Dynamiczny'}
+                </button>
+              ))}
+            </div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.6, delay: 0.5 }}
+              style={{
+                fontFamily: "'Manrope', sans-serif",
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'flex-end',
+                gap: '2px',
+              }}
+            >
+              <div style={{ fontSize: '16px', fontWeight: 700, color: '#1a1a1a' }}>
+                {formatTime(currentTime)}
+              </div>
+              <div style={{ fontSize: '11px', color: '#666', fontWeight: 500 }}>
+                {formatDate(currentTime)}
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+
+        <div className="flex flex-1 items-center justify-center w-full">
+          <AnimatePresence mode="wait">
+            {isEmployeesRoute ? (
+              <motion.div
+                key="employees-route"
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -24 }}
+                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                style={{ width: '100%' }}
+              >
+                <EmployeesRoute onBack={() => navigate('/')} />
+              </motion.div>
+            ) : (
+              <motion.div
+                key={`dashboard-${viewMode}`}
+                initial={{ opacity: 0, x: -24 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: 24 }}
+                transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                style={{ width: '100%' }}
+              >
+                {viewMode === 'bento' ? (
+                  <LinearityGrid
+                    onNavigate={id => {
+                      if (id === 'employees') navigate('/employees');
+                    }}
+                  />
+                ) : (
+                  <PuzzleGrid
+                    onNavigate={id => {
+                      if (id === 'employees') navigate('/employees');
+                    }}
+                  />
+                )}
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
-      </motion.div>
-
-      <div className="max-w-7xl mx-auto" style={{ position: 'relative', zIndex: 1 }}>
-        <AnimatePresence mode="wait">
-          {isEmployeesRoute ? (
-            <motion.div
-              key="employees-route"
-              initial={{ opacity: 0, x: 30 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: -24 }}
-              transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <EmployeesRoute onBack={() => navigate('/')} />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="dashboard-route"
-              initial={{ opacity: 0, x: -24 }}
-              animate={{ opacity: 1, x: 0 }}
-              exit={{ opacity: 0, x: 24 }}
-              transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
-            >
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                style={{
-                  marginBottom: '24px',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'space-between',
-                  padding: '12px 16px',
-                  background: 'rgba(255, 255, 255, 0.6)',
-                  backdropFilter: 'blur(10px)',
-                  borderRadius: '12px',
-                  boxShadow: '0 2px 12px rgba(0, 0, 0, 0.04)',
-                }}
-              >
-                <div
-                  style={{
-                    fontFamily: "'Manrope', sans-serif",
-                    fontSize: '14px',
-                    display: 'flex',
-                    alignItems: 'center',
-                    gap: '8px',
-                  }}
-                >
-                  <span style={{ color: '#1a1a1a', fontWeight: 600 }}>Panel główny</span>
-                </div>
-
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.6, delay: 0.5 }}
-                  style={{
-                    fontFamily: "'Manrope', sans-serif",
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'flex-end',
-                    gap: '2px',
-                  }}
-                >
-                  <div style={{ fontSize: '16px', fontWeight: 700, color: '#1a1a1a' }}>
-                    {formatTime(currentTime)}
-                  </div>
-                  <div style={{ fontSize: '11px', color: '#666', fontWeight: 500 }}>
-                    {formatDate(currentTime)}
-                  </div>
-                </motion.div>
-              </motion.div>
-
-              <motion.div
-                className="puzzle-grid"
-                layout
-                transition={{
-                  layout: {
-                    type: 'spring',
-                    stiffness: 400,
-                    damping: 30,
-                    mass: 0.8,
-                  },
-                }}
-              >
-                {TILES.map((tile, index) => {
-                  const isExpanded = expandedTile === tile.id;
-                  const hasSubLinks = tile.subLinks && tile.subLinks.length > 0;
-
-                  return (
-                    <motion.button
-                      key={tile.id}
-                      layout
-                      layoutId={tile.id}
-                      className={`puzzle-tile tile-${tile.size} ${isExpanded ? 'expanded' : ''} ${hasSubLinks ? 'has-sublinks' : ''}`}
-                      style={
-                        {
-                          '--tile-color': tile.color,
-                          '--tile-border': `${tile.color}90`,
-                          '--animation-delay': `${index * 0.05}s`,
-                        } as React.CSSProperties
-                      }
-                      initial={{ opacity: 0, y: 30, scale: 0.9 }}
-                      animate={{
-                        opacity: 1,
-                        y: 0,
-                        scale: 1,
-                      }}
-                      whileHover={
-                        !isExpanded
-                          ? {
-                              y: -8,
-                              rotate: 0.5,
-                              boxShadow: '0 16px 32px rgba(0, 0, 0, 0.12)',
-                              transition: {
-                                type: 'spring',
-                                stiffness: 400,
-                                damping: 25,
-                              },
-                            }
-                          : {}
-                      }
-                      whileTap={
-                        !isExpanded
-                          ? {
-                              scale: 0.98,
-                              y: -4,
-                            }
-                          : {}
-                      }
-                      transition={{
-                        layout: {
-                          type: 'spring',
-                          stiffness: 350,
-                          damping: 28,
-                          mass: 0.9,
-                        },
-                        opacity: {
-                          duration: 0.6,
-                          delay: index * 0.05,
-                          ease: [0.34, 1.56, 0.64, 1],
-                        },
-                        y: {
-                          duration: 0.6,
-                          delay: index * 0.05,
-                          ease: [0.34, 1.56, 0.64, 1],
-                        },
-                        scale: {
-                          duration: 0.6,
-                          delay: index * 0.05,
-                          ease: [0.34, 1.56, 0.64, 1],
-                        },
-                      }}
-                      onMouseEnter={() => setHoveredTile(tile.id)}
-                      onMouseLeave={() => setHoveredTile(null)}
-                      onClick={() => handleTileClick(tile)}
-                    >
-                      <div className="tile-content">
-                        <span
-                          className="tile-label"
-                          style={{ fontFamily: "'Manrope', sans-serif" }}
-                        >
-                          {tile.label}
-                        </span>
-
-                        {hasSubLinks && isExpanded && (
-                          <div className="sub-links">
-                            {tile.subLinks!.map((subLink, idx) => (
-                              <a
-                                key={idx}
-                                href={subLink.href}
-                                className="sub-link"
-                                style={{
-                                  fontFamily: "'Manrope', sans-serif",
-                                }}
-                                onClick={e => e.stopPropagation()}
-                              >
-                                {subLink.label}
-                              </a>
-                            ))}
-                          </div>
-                        )}
-
-                        {hasSubLinks && (
-                          <div className="expand-indicator">
-                            <svg
-                              width="20"
-                              height="20"
-                              viewBox="0 0 20 20"
-                              fill="none"
-                              style={{
-                                transform: isExpanded ? 'rotate(180deg)' : 'rotate(0deg)',
-                              }}
-                            >
-                              <path
-                                d="M5 7.5L10 12.5L15 7.5"
-                                stroke="currentColor"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                              />
-                            </svg>
-                          </div>
-                        )}
-                      </div>
-                      <div
-                        className="tile-hover-effect"
-                        style={{
-                          opacity: hoveredTile === tile.id || isExpanded ? 1 : 0,
-                          backgroundColor: tile.color,
-                        }}
-                      />
-                    </motion.button>
-                  );
-                })}
-              </motion.div>
-            </motion.div>
-          )}
-        </AnimatePresence>
       </div>
 
       {!isEmployeesRoute && (
