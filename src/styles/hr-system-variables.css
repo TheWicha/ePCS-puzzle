@@ -1,0 +1,201 @@
+/**
+ * HR System Design Variables
+ *
+ * Import this file to use the design system variables across your project:
+ * @import './hr-system-variables.css';
+ */
+
+:root {
+  /* ========================================
+     TYPOGRAPHY
+     ======================================== */
+
+  /* Font Families */
+  --font-display: 'Archivo Black', sans-serif;
+  --font-body: 'Manrope', sans-serif;
+
+  /* Font Sizes */
+  --text-h1: clamp(48px, 8vw, 96px);
+  --text-h2: clamp(32px, 5vw, 48px);
+  --text-h3: clamp(24px, 3vw, 32px);
+  --text-tile-label: clamp(16px, 2.5vw, 22px);
+  --text-tile-label-expanded: clamp(14px, 2vw, 18px);
+  --text-body: 18px;
+  --text-body-sm: 16px;
+  --text-sublink: 13px;
+
+  /* Font Weights */
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+  --weight-extrabold: 800;
+
+  /* Letter Spacing */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0;
+
+  /* Line Heights */
+  --leading-tight: 1.2;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.6;
+
+
+  /* ========================================
+     COLORS
+     ======================================== */
+
+  /* Base Colors */
+  --color-bg: #f5f5f7;
+  --color-card: #ffffff;
+  --color-text: #1a1a1a;
+  --color-text-muted: #666666;
+
+  /* Tile Accent Colors */
+  --color-employees: #FF6B6B;
+  --color-calendar: #4ECDC4;
+  --color-documents: #95E1D3;
+  --color-projects: #F38181;
+  --color-reports: #AA96DA;
+  --color-profile: #FCBAD3;
+  --color-administration: #FFFFD2;
+  --color-settings: #A8D8EA;
+  --color-wnioski: #FFD93D;
+  --color-board: #6BCB77;
+  --color-supervisory-board: #4D96FF;
+  --color-port-reports: #FF8364;
+  --color-contractors: #B983FF;
+
+
+  /* ========================================
+     SPACING
+     ======================================== */
+
+  --gap-xs: 4px;
+  --gap-sm: 8px;
+  --gap-md: 12px;
+  --gap-lg: 24px;
+  --gap-xl: 32px;
+
+  /* Grid Gaps (responsive) */
+  --grid-gap-mobile: 8px;
+  --grid-gap-tablet: 10px;
+  --grid-gap-desktop: 12px;
+
+  /* Grid Row Heights */
+  --grid-row-mobile: 140px;
+  --grid-row-tablet: 160px;
+  --grid-row-desktop: 180px;
+
+  /* Padding */
+  --padding-sm: 12px;
+  --padding-md: 16px;
+  --padding-lg: 24px;
+  --padding-xl: 32px;
+
+
+  /* ========================================
+     BORDER RADIUS
+     ======================================== */
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+
+  /* ========================================
+     SHADOWS
+     ======================================== */
+
+  --shadow-xs: 0 1px 4px rgba(0, 0, 0, 0.02);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 8px 16px rgba(0, 0, 0, 0.08);
+  --shadow-lg: 0 20px 40px rgba(0, 0, 0, 0.12);
+  --shadow-xl: 0 24px 48px rgba(0, 0, 0, 0.16);
+
+  /* Interactive Shadows */
+  --shadow-button: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-button-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-tile-hover: var(--shadow-lg);
+  --shadow-tile-expanded: var(--shadow-xl);
+
+
+  /* ========================================
+     TRANSITIONS
+     ======================================== */
+
+  /* Durations */
+  --duration-fast: 0.15s;
+  --duration-base: 0.3s;
+  --duration-slow: 0.4s;
+  --duration-entry: 0.6s;
+
+  /* Easing */
+  --ease-linear: linear;
+  --ease-in: ease-in;
+  --ease-out: ease-out;
+  --ease-in-out: ease-in-out;
+  --ease-base: ease;
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Combined Transitions */
+  --transition-base: var(--duration-base) var(--ease-base);
+  --transition-bounce: var(--duration-slow) var(--ease-bounce);
+  --transition-fast: var(--duration-fast) var(--ease-base);
+
+
+  /* ========================================
+     Z-INDEX LAYERS
+     ======================================== */
+
+  --z-base: 1;
+  --z-tile-label: 3;
+  --z-sublinks: 4;
+  --z-hover: 10;
+  --z-expanded: 20;
+  --z-floating: 50;
+
+
+  /* ========================================
+     TRANSFORMS
+     ======================================== */
+
+  --transform-tile-hover: translateY(-12px) rotate(0.5deg);
+  --transform-tile-expanded: translateY(-12px) scale(1.02);
+  --transform-tile-active: translateY(-6px) scale(0.98);
+  --transform-button-hover: translateY(-2px);
+  --transform-chevron-expanded: rotate(180deg);
+}
+
+
+/* ========================================
+   UTILITY CLASSES
+   ======================================== */
+
+/* Typography Utilities */
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-body {
+  font-family: var(--font-body);
+}
+
+/* Color Utilities */
+.bg-app {
+  background-color: var(--color-bg);
+}
+
+.bg-card {
+  background-color: var(--color-card);
+}
+
+.text-primary {
+  color: var(--color-text);
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
